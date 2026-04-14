@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maze Game</title>
+<style>
+  body { font-family: Arial; text-align: center; background:#f4f4f4; }
+  #maze { display:grid; grid-template-columns: repeat(10,40px); grid-gap:2px; justify-content:center; margin:20px auto; }
+  .cell { width:40px; height:40px; border:1px solid #ccc; }
+  .wall { background:rgb(34, 44, 140); }
+  .path { background:white; }
+  .dog { background:rgba(255, 0, 221, 0.407); }
+  .goal { background:green; }
+  button { padding:10px; margin:5px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<h1>Maze Game</h1>
+<div id="maze"></div>
+
+<div>
+  <button onclick="move('up')">Up</button><br>
+  <button onclick="move('left')">Left</button>
+  <button onclick="move('down')">Down</button>
+  <button onclick="move('right')">Right</button>
+</div>
+
+<div id="info"></div>
+
+<script>
+// All levels same size (10x10), with dead ends and misleading paths
+const levels = [
+  [
+    [0,0,1,1,1,1,1,1,1,1],
+    [1,0,1,0,0,0,0,0,1,1],
+    [1,0,1,0,1,1,1,0,1,1],
+    [1,0,0,0,1,0,1,0,0,0],
+    [1,1,1,0,1,0,1,1,1,0],
+    [1,0,0,0,1,0,0,0,1,0],
+    [1,0,1,1,1,1,1,0,1,0],
+    [1,0,0,0,0,0,1,0,1,0],
+    [1,1,1,1,1,0,1,0,1,0],
+    [1,1,1,1,1,0,0,0,1,0]
+  ],
+  [
+    [0,1,1,1,1,1,1,1,1,1],
+    [0,0,0,0,0,1,0,0,0,1],
+    [1,1,1,1,0,1,0,1,0,1],
+    [1,0,0,1,0,0,0,1,0,1],
+    [1,0,1,1,1,1,1,1,0,1],
+    [1,0,0,0,0,0,0,1,0,1],
+    [1,1,1,1,1,1,0,1,0,1],
+    [1,0,0,0,0,1,0,0,0,1],
+    [1,0,1,1,0,1,1,1,0,0],
+    [1,0,0,1,0,0,0,0,0,0]
+  ],
+  [
+    [0,0,0,1,1,1,1,1,1,1],
+    [1,1,0,1,0,0,0,0,0,1],
+    [1,0,0,1,0,1,1,1,0,1],
+    [1,0,1,1,0,1,0,1,0,1],
+    [1,0,0,0,0,1,0,1,0,1],
+    [1,1,1,1,0,1,0,1,0,1],
+    [1,0,0,0,0,1,0,0,0,1],
+    [1,0,1,1,1,1,1,1,0,1],
+    [1,0,0,0,0,0,0,1,0,1],
+    [1,1,1,1,1,1,0,0,0,0]
+  ]
+];
+
+let level = 0;
+let score = 0;
+let dog = {x:0,y:0};
+let maze = levels[level];
+let size = 10;
+let goal = {x:9,y:9};
+
+const mazeEl = document.getElementById('maze');
+const infoEl = document.getElementById('info');
+
+function draw(){
+  mazeEl.innerHTML='';
+  for(let y=0;y<size;y++){
+    for(let x=0;x<size;x++){
+      let d=document.createElement('div');
+      d.classList.add('cell');
+      if(maze[y][x]===1) d.classList.add('wall');
+      else d.classList.add('path');
+      if(x===dog.x && y===dog.y) d.classList.add('dog');
+      if(x===goal.x && y===goal.y) d.classList.add('goal');
+      mazeEl.appendChild(d);
+    }
+  }
+}
+
+function move(dir){
+  let nx=dog.x, ny=dog.y;
+  if(dir==='up') ny--;
+  if(dir==='down') ny++;
+  if(dir==='left') nx--;
+  if(dir==='right') nx++;
+
+  if(nx>=0 && ny>=0 && nx<size && ny<size && maze[ny][nx]===0){
+    dog.x=nx; dog.y=ny;
+  }
+
+  if(dog.x===goal.x && dog.y===goal.y){
+    score++;
+    level++;
+
+    if(level>=levels.length){
+      alert('🎉 You beat all levels! Score: '+score);
+      level=0; score=0;
+    } else {
+      alert('Nice! This next maze is trickier 😈');
+    }
+
+    loadLevel();
+    return;
+  }
+
+  draw();
+}
+
+function loadLevel(){
+  maze = levels[level];
+  dog = {x:0,y:0};
+  goal = {x:9,y:9};
+  updateInfo();
+  draw();
+}
+
+function updateInfo(){
+  infoEl.textContent = `Level: ${level+1} | Score: ${score}`;
+}
+
+loadLevel();
+</script>
+
+</body>
+</html>
