@@ -3,6 +3,14 @@ body {
     font-family:Arial, Helvetica, sans-serif;  
     color: Navy; 
 }
+
+nav{
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgb(234, 204, 243);
+    z-index: 100;
+
 nav a {
     float: right;
     padding: 10px;
